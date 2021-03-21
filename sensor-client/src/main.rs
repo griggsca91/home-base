@@ -2,6 +2,7 @@ use nats;
 use serde_json::{json};
 use serde::{Serialize, Deserialize};
 use std::time::{SystemTime};
+use std::{time, thread};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct GarageSensorState {
@@ -25,6 +26,15 @@ fn post_update(conn: &nats::Connection, distance: f64) {
 
 fn main() {
     let nc = nats::connect("167.99.232.215:4222").unwrap();
+
+    loop {
+        let ten_millis = time::Duration::from_millis(1_000);
+        let now = time::Instant::now();
+
+        thread::sleep(ten_millis);
+        println!("posting update");
+        post_update(&nc, 10.3)
+    }
 
     post_update(&nc, 10.3)
 }
