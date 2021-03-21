@@ -47,8 +47,8 @@ func main() {
 	defer nc.Close()
 
 	// Simple Async Subscriber
-	nc.Subscribe("foo", func(m *nats.Msg) {
-		fmt.Printf("Received a message: %s\n", string(m.Data))
+	nc.Subscribe(">", func(m *nats.Msg) {
+		fmt.Printf("Received a message: %s %s\n", m.Subject,	 string(m.Data))
 		for index, conn := range connections {
 			if err := conn.WriteMessage(websocket.TextMessage, m.Data); err != nil {
 				log.Println("write:", err)
