@@ -24,7 +24,7 @@ fn post_update(conn: &nats::Connection, distance: f64) {
 }
 
 fn main() {
-    let nc = nats::connect("localhost:4222").unwrap();
+    let nc = nats::connect("167.99.232.215:4222").unwrap();
 
     post_update(&nc, 10.3)
 }

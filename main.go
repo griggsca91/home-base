@@ -40,7 +40,7 @@ func passthrough(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	nc, err := nats.Connect(nats.DefaultURL)
+	nc, err := nats.Connect("nats://167.99.232.215:4222")
 	if err != nil {
 		log.Fatal(err)
 	}
