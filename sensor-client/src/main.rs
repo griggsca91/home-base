@@ -42,10 +42,11 @@ fn post_update(conn: &nats::Connection) {
     let mut start = Instant::now();
     let mut reading = false;
 
-    println!("Reading input");
+    println!("Reading input: {:?}", Instant::now());
 
     loop {
         let level = read_pin.read();
+        println!("Level: {:?}", level);
         if level == Level::High && reading == false {
             reading = true;
             start = Instant::now()
@@ -54,8 +55,9 @@ fn post_update(conn: &nats::Connection) {
             break
         }
     }
+    println!("Finished reading input: {:?}", Instant::now());
 
-    let total_time = start.elapsed().as_millis();
+    let total_time = start.elapsed().as_nanos();
     
     println!("total time: {:?}", total_time);
     println!("distance: {:?}", calculate_distance(total_time));
