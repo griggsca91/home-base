@@ -55,8 +55,9 @@ fn post_update(conn: &nats::Connection) {
         else if level == Level::Low && reading == true {
             break
         } else if level == Level::Low && reading == false && total_time.elapsed().as_millis() > 2_000 {
-	   break
-	}
+            println!("unable to collect input");
+            return
+        }
     }
     println!("Finished reading input: {:?}", Instant::now());
 
