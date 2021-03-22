@@ -8,6 +8,7 @@ use rppal::gpio::{Gpio, Level};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct GarageSensorState {
+    source: String,
     distance: f64,
     time: u64
 }
@@ -38,7 +39,7 @@ fn post_update(conn: &nats::Connection) {
     thread::sleep(Duration::from_millis(100));
     trigger_pin.set_low();
 
-    let start = Instant::now();
+    let mut start = Instant::now();
     let mut reading = false;
 
     println!("Reading input");
@@ -46,7 +47,8 @@ fn post_update(conn: &nats::Connection) {
     loop {
         let level = read_pin.read();
         if level == Level::High && reading == false {
-            reading = true
+            reading = true;
+            start = Instant::now()
         }
         else if level == Level::Low && reading == true {
             break
@@ -60,6 +62,7 @@ fn post_update(conn: &nats::Connection) {
     let distance = calculate_distance(total_time);
 
     let payload  = GarageSensorState {
+        source: "garage_sensor".to_string(),
         distance: distance,
         time: SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH)
@@ -80,7 +83,6 @@ fn main() {
         let now = time::Instant::now();
 
         thread::sleep(ten_millis);
-        println!("posting update");
         post_update(&nc)
     }
 }
