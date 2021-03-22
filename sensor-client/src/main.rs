@@ -25,8 +25,8 @@ const GPIO_DISTANCE_TRIGGER_PIN: u8 = 20;
  return ((high_level_time_secs * 340) / 2) * 100
  */
 
-fn calculate_distance(milliseconds: u128) -> f64 {
-    ((((milliseconds as f64 / 1_000_000_000.0) * 340.0) / 2.0) * 100.0) / 2.54
+fn calculate_distance(nanoseconds: u128) -> f64 {
+    ((((nanoseconds as f64 / 1_000_000_000.0) * 340.0) / 2.0) * 100.0) / 2.54
 }
 
 fn post_update(conn: &nats::Connection) {
@@ -40,6 +40,7 @@ fn post_update(conn: &nats::Connection) {
     trigger_pin.set_low();
 
     let mut start = Instant::now();
+    let mut total_time = Instant::now();
     let mut reading = false;
 
     println!("Reading input: {:?}", Instant::now());
@@ -53,7 +54,9 @@ fn post_update(conn: &nats::Connection) {
         }
         else if level == Level::Low && reading == true {
             break
-        }
+        } else if level == Level::Low && reading == false && total_time.elapsed().as_millis() > 2_000 {
+	   break
+	}
     }
     println!("Finished reading input: {:?}", Instant::now());
 
