@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -49,8 +50,33 @@ func main() {
 	// Simple Async Subscriber
 	nc.Subscribe(">", func(m *nats.Msg) {
 		fmt.Printf("Received a message: %s %s\n", m.Subject,	 string(m.Data))
+		var data map[string]interface{}
+		if err := json.Unmarshal(m.Data, &data); err != nil {
+			log.Println("Error unmarshaling data", err)
+			return
+		}
+
+		distance, ok := data["distance"].(float64)
+		if ok != true {
+			return
+		}
+		doorState := "closed"
+		if distance > 80 {
+			doorState = "opened"
+		}
+
+		data["doorState"] = doorState
+
+		rawPayload, err := json.Marshal(data)
+		if err != nil {
+			log.Println("Error marshaling data", err)
+			return
+		}
+
 		for index, conn := range connections {
-			if err := conn.WriteMessage(websocket.TextMessage, m.Data); err != nil {
+			fmt.Println("Sending a message")
+
+			if err := conn.WriteMessage(websocket.TextMessage, rawPayload); err != nil {
 				log.Println("write:", err)
 				conn.Close()
 				connections = append(connections[:index], connections[index+1:]...)
