@@ -26,7 +26,7 @@ const GPIO_DISTANCE_TRIGGER_PIN: u8 = 20;
  */
 
 fn calculate_distance(milliseconds: u128) -> f64 {
-    ((((milliseconds as f64 / 1_000.0) * 340.0) / 2.0) * 100.0) / 2.54
+    ((((milliseconds as f64 / 1_000_000_000.0) * 340.0) / 2.0) * 100.0) / 2.54
 }
 
 fn post_update(conn: &nats::Connection) {
