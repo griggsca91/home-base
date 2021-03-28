@@ -45,10 +45,14 @@ func passthrough(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	log.Println("Starting application")
+	log.Println("Connecting to nats")
+
 	nc, err := nats.Connect("nats://167.99.232.215:4222")
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("Nats is connected: ", nc.IsConnected())
 	defer nc.Close()
 
 	// Simple Async Subscriber
@@ -90,6 +94,8 @@ func main() {
 
 	http.HandleFunc("/", passthrough)
 	http.HandleFunc("/lb", lb)
+
+	log.Println("Listening on port 8080")
 
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
