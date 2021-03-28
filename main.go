@@ -18,6 +18,10 @@ var upgrader = websocket.Upgrader{
 
 var connections = make([]*websocket.Conn, 0)
 
+func lb(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+}
+
 func passthrough(w http.ResponseWriter, r *http.Request) {
 	c, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
@@ -85,5 +89,7 @@ func main() {
 	})
 
 	http.HandleFunc("/", passthrough)
+	http.HandleFunc("/lb", lb)
+
 	log.Fatal(http.ListenAndServe("localhost:8080", nil))
 }
