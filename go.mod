@@ -1,6 +1,6 @@
 module github.com/griggsca91/home-base
 
-go 1.16
+go 1.15
 
 require (
 	github.com/golang/protobuf v1.5.1 // indirect
